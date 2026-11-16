@@ -1,0 +1,46 @@
+[project]
+name = "seedream-eva"
+version = "0.1.0"
+description = "Realtime multimodal evaluation for Seedream image generation"
+readme = "EVA/README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "arkruntime>=0.1.0",
+  "python-dotenv>=1.0.1",
+  "pydantic>=2.9.0",
+  "httpx>=0.27.0",
+  "Pillow>=10.4.0",
+  "fastapi>=0.115.0",
+  "uvicorn>=0.30.0",
+  "rapidocr-onnxruntime>=1.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-asyncio>=0.24.0",
+  "ruff>=0.6.0",
+]
+
+[project.scripts]
+eva = "EVA.cli.main:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["EVA*"]
+
+[tool.pytest.ini_options]
+testpaths = ["EVA/tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+ignore = ["N999"]  # The user-requested package name EVA is intentionally uppercase.

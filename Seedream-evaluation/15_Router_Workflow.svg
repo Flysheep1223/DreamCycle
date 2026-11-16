@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1800" viewBox="0 0 1400 1800" role="img" aria-labelledby="svgTitle svgDesc">
+  <title id="svgTitle">Seedream 实时机评多标签路由器工作流</title>
+  <desc id="svgDesc">从原始请求开始，依次进行输入盘点、规则初筛、多标签意图识别、冲突校验，再按明确程度选择插件并集，最终生成检查清单和评分计划。</desc>
+  <defs>
+    <style><![CDATA[
+      :root {
+        --surface: #fcfcfb;
+        --card: #ffffff;
+        --ink: #0b0b0b;
+        --muted: #52514e;
+        --line: #86b6ef;
+        --accent: #2a78d6;
+        --soft: #eaf3fe;
+        --strong: #184f95;
+        --strong-ink: #ffffff;
+        --neutral-line: #c9c9c4;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --surface: #1a1a19;
+          --card: #262625;
+          --ink: #f0efec;
+          --muted: #c3c2b7;
+          --line: #184f95;
+          --accent: #3987e5;
+          --soft: #20324a;
+          --strong: #104281;
+          --strong-ink: #ffffff;
+          --neutral-line: #52514e;
+        }
+      }
+      .bg { fill: var(--surface); }
+      .card { fill: var(--card); stroke: var(--neutral-line); stroke-width: 2; }
+      .node { fill: var(--soft); stroke: var(--line); stroke-width: 2; }
+      .strong { fill: var(--strong); stroke: var(--strong); stroke-width: 2; }
+      .flow { fill: none; stroke: var(--line); stroke-width: 3; marker-end: url(#arrow); }
+      .join { fill: none; stroke: var(--line); stroke-width: 3; }
+      .title { font: 700 34px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--ink); }
+      .subtitle { font: 400 18px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--muted); }
+      .stage { font: 700 19px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--ink); letter-spacing: 1px; }
+      .node-title { font: 700 22px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--ink); text-anchor: middle; }
+      .node-text { font: 400 17px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--muted); text-anchor: middle; }
+      .small-title { font: 700 19px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--ink); text-anchor: middle; }
+      .small-text { font: 400 15px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--muted); text-anchor: middle; }
+      .edge-label { font: 600 15px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--muted); text-anchor: middle; }
+      .inverse-title { font: 700 22px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--strong-ink); text-anchor: middle; }
+      .inverse-text { font: 400 17px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--strong-ink); text-anchor: middle; opacity: .9; }
+      .badge-text { font: 700 17px Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif; fill: var(--ink); text-anchor: middle; }
+      .number { font: 700 18px Inter, Arial, sans-serif; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; }
+    ]]></style>
+    <marker id="arrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="var(--line)"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1400" height="1800"/>
+
+  <!-- Header -->
+  <text class="title" x="64" y="66">Seedream 实时机评 · 多标签路由工作流</text>
+  <text class="subtitle" x="64" y="103">路由只决定“评什么、调用哪些评分器”，不在此阶段给图片打分</text>
+  <rect class="node" x="1090" y="42" width="246" height="52" rx="26"/>
+  <text class="badge-text" x="1213" y="75">机评路由 · 可多选</text>
+
+  <!-- Stage 1 -->
+  <text class="stage" x="64" y="154">01　输入与规则初筛</text>
+
+  <rect class="card" x="400" y="174" width="600" height="98" rx="16"/>
+  <circle cx="438" cy="205" r="18" fill="var(--accent)"/>
+  <text class="number" x="438" y="206">1</text>
+  <text class="node-title" x="700" y="211">输入盘点</text>
+  <text class="node-text" x="700" y="243">原始 Prompt · 输入图片及角色 · 控制条件</text>
+
+  <path class="flow" d="M700 272 V310"/>
+
+  <rect class="node" x="400" y="310" width="600" height="104" rx="16"/>
+  <circle cx="438" cy="341" r="18" fill="var(--accent)"/>
+  <text class="number" x="438" y="342">2</text>
+  <text class="node-title" x="700" y="347">确定性规则初筛</text>
+  <text class="node-text" x="700" y="379">先处理无歧义输入，再保留需要意图判断的分支</text>
+
+  <!-- Rule branches -->
+  <path class="flow" d="M700 414 V438 H260 V462"/>
+  <path class="flow" d="M700 414 V462"/>
+  <path class="flow" d="M700 414 V438 H1140 V462"/>
+
+  <rect class="card" x="80" y="462" width="360" height="112" rx="16"/>
+  <text class="small-title" x="260" y="501">没有输入图</text>
+  <text class="small-text" x="260" y="532">标记 text_to_image</text>
+  <text class="small-text" x="260" y="556">不启用编辑 / 参考图插件</text>
+
+  <rect class="card" x="520" y="462" width="360" height="112" rx="16"/>
+  <text class="small-title" x="700" y="501">存在输入图</text>
+  <text class="small-text" x="700" y="532">保留两种可能</text>
+  <text class="small-text" x="700" y="556">编辑源图 or 参考图生成</text>
+
+  <rect class="card" x="960" y="462" width="360" height="112" rx="16"/>
+  <text class="small-title" x="1140" y="501">独立可叠加标签</text>
+  <text class="small-text" x="1140" y="532">指定文字 → needs_ocr</text>
+  <text class="small-text" x="1140" y="556">控制条件 → needs_control</text>
+
+  <!-- Join into intent model -->
+  <path class="join" d="M260 574 V602 H700"/>
+  <path class="join" d="M700 574 V630"/>
+  <path class="join" d="M1140 574 V602 H700"/>
+  <path class="flow" d="M700 602 V630"/>
+
+  <!-- Stage 2 -->
+  <text class="stage" x="64" y="626">02　多标签意图与冲突校验</text>
+
+  <rect class="strong" x="400" y="648" width="600" height="102" rx="16"/>
+  <circle cx="438" cy="679" r="18" fill="#ffffff" opacity=".95"/>
+  <text class="number" x="438" y="680" style="fill:var(--strong)">3</text>
+  <text class="inverse-title" x="700" y="685">VLM / LLM 意图识别</text>
+  <text class="inverse-text" x="700" y="718">修改源图？保持参考主体？还是两者都有？</text>
+
+  <path class="flow" d="M700 750 V790"/>
+
+  <rect class="node" x="400" y="790" width="600" height="112" rx="16"/>
+  <circle cx="438" cy="821" r="18" fill="var(--accent)"/>
+  <text class="number" x="438" y="822">4</text>
+  <text class="node-title" x="700" y="827">输出多标签路由 JSON</text>
+  <text class="node-text" x="700" y="858">modes · needs_ocr · needs_control</text>
+  <text class="node-text" x="700" y="883">multi_reference · confidence</text>
+
+  <path class="flow" d="M700 902 V942"/>
+
+  <rect class="card" x="400" y="942" width="600" height="102" rx="16"/>
+  <circle cx="438" cy="973" r="18" fill="var(--accent)"/>
+  <text class="number" x="438" y="974">5</text>
+  <text class="node-title" x="700" y="979">Schema 与冲突校验</text>
+  <text class="node-text" x="700" y="1011">检查输入图、图片数量、目标文字和控制条件是否匹配</text>
+
+  <path class="flow" d="M700 1044 V1070"/>
+
+  <!-- Decision and two strategies -->
+  <polygon class="node" points="700,1070 850,1148 700,1226 550,1148"/>
+  <text class="small-title" x="700" y="1143">意图明确？</text>
+  <text class="small-text" x="700" y="1169">还是混合 / 低置信？</text>
+
+  <path class="flow" d="M550 1148 H440"/>
+  <text class="edge-label" x="496" y="1128">明确</text>
+  <path class="flow" d="M850 1148 H960"/>
+  <text class="edge-label" x="906" y="1128">混合 / 低置信</text>
+
+  <rect class="card" x="80" y="1092" width="360" height="112" rx="16"/>
+  <text class="small-title" x="260" y="1131">启用命中的插件</text>
+  <text class="small-text" x="260" y="1162">只运行与本次意图</text>
+  <text class="small-text" x="260" y="1186">明确相关的评分器</text>
+
+  <rect class="card" x="960" y="1092" width="360" height="112" rx="16"/>
+  <text class="small-title" x="1140" y="1131">取合理候选插件的并集</text>
+  <text class="small-text" x="1140" y="1162">例如 edit + reference</text>
+  <text class="small-text" x="1140" y="1186">扩大覆盖，不随意单选</text>
+
+  <!-- Merge -->
+  <path class="join" d="M260 1204 V1252 H700"/>
+  <path class="join" d="M1140 1204 V1252 H700"/>
+  <path class="flow" d="M700 1252 V1290"/>
+
+  <!-- Stage 3 -->
+  <text class="stage" x="64" y="1284">03　检查清单与评分计划</text>
+
+  <rect class="node" x="400" y="1290" width="600" height="100" rx="16"/>
+  <circle cx="438" cy="1321" r="18" fill="var(--accent)"/>
+  <text class="number" x="438" y="1322">6</text>
+  <text class="node-title" x="700" y="1327">并行生成检查清单</text>
+  <text class="node-text" x="700" y="1359">在 Seedream 生图期间完成，出图后直接按计划评分</text>
+
+  <!-- Checklist fan-out -->
+  <path class="flow" d="M700 1390 V1414 H200 V1440"/>
+  <path class="flow" d="M700 1390 V1414 H533 V1440"/>
+  <path class="flow" d="M700 1390 V1414 H866 V1440"/>
+  <path class="flow" d="M700 1390 V1414 H1200 V1440"/>
+
+  <rect class="card" x="50" y="1440" width="300" height="112" rx="16"/>
+  <text class="small-title" x="200" y="1478">文生图清单</text>
+  <text class="small-text" x="200" y="1508">对象 · 属性 · 数量</text>
+  <text class="small-text" x="200" y="1532">关系 · 目标文字</text>
+
+  <rect class="card" x="383" y="1440" width="300" height="112" rx="16"/>
+  <text class="small-title" x="533" y="1478">编辑清单</text>
+  <text class="small-text" x="533" y="1508">应修改 · 应保持</text>
+  <text class="small-text" x="533" y="1532">mask 是否可用</text>
+
+  <rect class="card" x="716" y="1440" width="300" height="112" rx="16"/>
+  <text class="small-title" x="866" y="1478">参考图清单</text>
+  <text class="small-text" x="866" y="1508">主体保持 · 新 Prompt</text>
+  <text class="small-text" x="866" y="1532">逐主体要求</text>
+
+  <rect class="card" x="1049" y="1440" width="300" height="112" rx="16"/>
+  <text class="small-title" x="1199" y="1478">OCR 清单</text>
+  <text class="small-text" x="1199" y="1508">目标字符串 · 区域</text>
+  <text class="small-text" x="1199" y="1532">语言 · 阅读顺序</text>
+
+  <!-- Checklists to plan -->
+  <path class="join" d="M200 1552 V1574 H700"/>
+  <path class="join" d="M533 1552 V1574 H700"/>
+  <path class="join" d="M866 1552 V1574 H700"/>
+  <path class="join" d="M1199 1552 V1574 H700"/>
+  <path class="flow" d="M700 1574 V1602"/>
+
+  <rect class="strong" x="330" y="1602" width="740" height="108" rx="18"/>
+  <circle cx="370" cy="1634" r="18" fill="#ffffff" opacity=".95"/>
+  <text class="number" x="370" y="1635" style="fill:var(--strong)">7</text>
+  <text class="inverse-title" x="700" y="1640">Evaluation Plan · 评分计划</text>
+  <text class="inverse-text" x="700" y="1673">通用 VLM 对齐 + PQ 永远启用 · 专项插件按多标签并集执行</text>
+
+  <text class="subtitle" x="700" y="1752" text-anchor="middle">输出：评分计划 + 检查清单　→　等待 Seedream 图片返回后并行评分</text>
+</svg>
