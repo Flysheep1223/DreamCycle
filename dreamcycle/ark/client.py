@@ -6,7 +6,7 @@ import asyncio
 import json
 from typing import Any
 
-from arkruntime import Ark
+from volcenginesdkarkruntime import Ark
 
 from dreamcycle.ark.validation import SchemaValidationError, validate_json_schema
 from dreamcycle.config import Settings
