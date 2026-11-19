@@ -17,8 +17,9 @@ RUN apt-get update \
 RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml uv.lock ./
-COPY dreamcycle ./dreamcycle
 RUN uv sync --frozen --no-dev --default-index https://mirrors.aliyun.com/pypi/simple/
+
+COPY dreamcycle ./dreamcycle
 
 EXPOSE 8010
 CMD ["/app/.venv/bin/uvicorn", "dreamcycle.server.app:app", "--host", "0.0.0.0", "--port", "8010", "--workers", "1"]
