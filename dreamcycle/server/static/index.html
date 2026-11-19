@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DreamCycle · Seedream 图像评估与优化</title>
+  <style>
+    :root{--bg:#f4f7fb;--surface:#fff;--ink:#172033;--muted:#65748b;--line:#dce4ef;--blue:#205fa8;--soft:#e9f2fc;--good:#176b46;--warn:#8a5a00;--bad:#b42318}
+    *{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}header{background:#102a4c;color:#fff;padding:26px 24px}header .wrap,main{max-width:1500px;margin:auto}header h1{margin:0 0 6px;font-size:26px}header p{margin:0;color:#d7e4f5}main{width:100%;padding:22px}.layout{display:grid;grid-template-columns:minmax(280px,390px) minmax(0,1fr);gap:20px;align-items:start}.layout>*,.card,section,.row,.grow{min-width:0}.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:20px}.card h2{margin:0 0 14px;font-size:19px}.card h3{margin:18px 0 8px;font-size:16px}label{display:block;font-weight:600;margin:14px 0 6px}input,textarea,select{width:100%;max-width:100%;min-width:0;border:1px solid var(--line);border-radius:8px;padding:10px 11px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:145px;resize:vertical}input[type=file]{padding:8px;font-size:12px}input[type=number]{max-width:180px}.hint{color:var(--muted);font-size:12px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1}.btn{border:0;border-radius:8px;background:var(--blue);color:#fff;padding:11px 18px;font-weight:600;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}.btn.secondary{background:#e8eef6;color:var(--ink)}a{color:var(--blue)}.status{display:inline-block;border-radius:999px;padding:4px 11px;background:#edf1f6;color:var(--muted);font-size:12px}.status.running{background:#fff1cf;color:var(--warn)}.status.done{background:#e5f3e5;color:var(--good)}.status.failed{background:#faece9;color:var(--bad)}.job-list{max-height:280px;overflow:auto;margin-top:12px}.job-item{display:flex;align-items:center;gap:10px;padding:9px;margin:6px 0;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:#fff}.job-item.active{border-color:var(--blue);background:var(--soft)}.job-item .job-meta{flex:1;min-width:0}.job-item .job-id,.job-item .job-prompt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.job-item .job-id{font:11px ui-monospace,monospace;color:var(--muted)}.job-item .job-prompt{font-size:12px}.file-list{display:grid;gap:8px;margin-top:10px}.file-item{display:flex;align-items:center;gap:9px;padding:7px;border:1px solid var(--line);border-radius:8px;background:#f8fafc}.file-thumb{width:48px;height:48px;object-fit:cover;border-radius:6px;background:#e9eef5}.file-info{flex:1;min-width:0}.file-name{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-order{font-size:11px;color:var(--muted)}.remove-file{border:0;background:transparent;color:var(--bad);cursor:pointer;padding:5px;font-size:12px}.note{background:var(--soft);border-left:3px solid var(--blue);padding:11px 13px;margin:12px 0}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric{background:#f3f6fa;border-radius:9px;padding:10px}.metric small{display:block;color:var(--muted)}.metric strong{font-size:19px}.attempt{border:1px solid var(--line);border-radius:10px;padding:14px;margin:14px 0}.attempt-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.image-frame{display:flex;align-items:center;justify-content:center;width:100%;height:360px;overflow:hidden;background:#f1f3f6;border-radius:8px}.image-frame img{display:block;width:100%;height:100%;object-fit:contain}.candidate-strip{display:flex;align-items:flex-start;gap:14px;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;padding:4px 2px 14px;scroll-snap-type:x proximity}.candidate-strip .attempt{flex:0 0 clamp(240px,75vw,300px);margin:0;scroll-snap-align:start}.candidate-strip .image-frame{height:210px}.candidate-strip .attempt.selected{border-color:var(--blue);box-shadow:0 0 0 2px #205fa822}.candidate-strip .attempt-head h3{font-size:16px}.candidate-strip pre{max-height:220px;font-size:11px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}pre{max-width:100%;white-space:pre-wrap;word-break:break-word;background:#101722;color:#e7edf6;border-radius:8px;padding:12px;font:12px/1.6 ui-monospace,monospace;max-height:300px;overflow:auto}details{margin:10px 0}summary{cursor:pointer;color:var(--blue);font-weight:600}table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f3f6fa}.scroll{max-width:100%;overflow:auto}.score-pass{color:var(--good);font-weight:700}.score-fail{color:var(--bad);font-weight:700}#job-links{overflow-wrap:anywhere}.empty{color:var(--muted);padding:30px;text-align:center}.error{color:var(--bad);white-space:pre-wrap}.footer{color:var(--muted);font-size:12px;margin-top:20px}@media(max-width:1000px){.layout{grid-template-columns:1fr}.metric-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){main{padding:12px}.card{padding:14px}.two{grid-template-columns:1fr}header{padding:20px 16px}.image-frame{height:250px}}
+  </style>
+</head>
+<body>
+<header><div class="wrap"><h1>DreamCycle · Seedream 图像评估与优化</h1><p>生成 A → 评估 → Prompt 改写 → B1 → 最多五轮联合修复</p></div></header>
+<main>
+  <div class="layout">
+    <section class="card">
+      <h2>新建优化任务</h2>
+      <form id="job-form">
+        <label for="api_key">ARK API Key <span class="hint">必填，使用你自己的 key</span></label>
+        <input id="api_key" name="api_key" type="password" required autocomplete="off" spellcheck="false" placeholder="输入你的 ARK_API_KEY">
+        <div class="hint">仅用于本次任务的 Ark 请求；模型 endpoint 沿用服务器配置。key 不写入结果文件，也不保存到浏览器。</div>
+        <label for="prompt">单条 Prompt <span class="hint">与批量任务至少填写一项</span></label>
+        <textarea id="prompt" name="prompt" placeholder="描述要生成或编辑的画面、主体、布局、材质、光照和文字"></textarea>
+        <details><summary>批量提交任务（每行一个 Prompt）</summary><textarea id="batch_prompts" placeholder="第一行是第一个任务&#10;第二行是第二个任务&#10;每个任务独立评估和优化"></textarea><div class="hint">批量任务共用本页的 key、源图和生成参数，提交后可在右侧任务列表统一查看。</div></details>
+        <label for="input_images">源图 / 参考图 <span class="hint">可多选</span></label>
+        <input id="input_images" name="input_images" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+        <div class="hint">可多次选择，图片会累积添加并按文件名排序；没有源图时走文生图。</div>
+        <div id="reference-file-list" class="file-list"></div>
+        <label for="generated_image">已有输出 A <span class="hint">可选</span></label>
+        <input id="generated_image" name="generated_image" type="file" accept="image/png,image/jpeg,image/webp">
+        <div class="hint">不上传时，系统先根据 Prompt 和源图生成 A。</div>
+        <label for="aspect_ratio">图片比例</label>
+        <select id="aspect_ratio" name="aspect_ratio">
+          <option value="">默认比例（使用默认尺寸）</option>
+          <option value="1:1" data-size="2048x2048">1:1 · 方形</option>
+          <option value="4:3" data-size="2304x1728">4:3 · 横向</option>
+          <option value="3:4" data-size="1728x2304">3:4 · 竖向</option>
+          <option value="16:9" data-size="2560x1440">16:9 · 宽屏</option>
+          <option value="9:16" data-size="1440x2560">9:16 · 竖屏</option>
+          <option value="3:2" data-size="2496x1664">3:2 · 横向</option>
+          <option value="2:3" data-size="1664x2496">2:3 · 竖向</option>
+        </select>
+        <div class="hint">选择比例会自动填充精确尺寸；手动修改尺寸时以手动值为准。</div>
+        <div class="row">
+          <div class="grow"><label for="generation_size">生成尺寸</label><input id="generation_size" name="generation_size" placeholder="留空使用默认尺寸"></div>
+          <div><label for="generation_seed">Seed</label><input id="generation_seed" name="generation_seed" type="number" placeholder="可选"></div>
+        </div>
+        <div class="note">模型相关评分每张图独立评审 10 次并逐字段取众数；最多进行 5 轮联合修复。任务可能需要几分钟。</div>
+        <button class="btn" id="submit" type="submit">开始生成与优化</button>
+        <span id="form-error" class="error"></span>
+      </form>
+      <div class="footer">上传限制：单张 25MB；PNG/JPG/WebP。所有结果保存在本地 dreamcycle/runs。</div>
+    </section>
+    <section>
+      <div class="card">
+        <div class="row"><h2 class="grow" style="margin:0">任务状态</h2><span id="status" class="status">未开始</span></div>
+        <div class="row" style="margin-top:12px"><input id="job_lookup" class="grow" placeholder="输入任务号，例如 web-job-..."><button class="btn secondary" id="lookup" type="button">查找</button></div>
+        <div id="job-list" class="job-list"></div>
+        <p id="message" class="hint">提交后在此查看进度。</p>
+        <div id="job-links"></div>
+      </div>
+      <div id="results"><div class="card empty">还没有结果。输入 Prompt 后开始一次 A/B 优化。</div></div>
+    </section>
+  </div>
+</main>
+<script src="static/config.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const API_BASE = (window.DREAMCYCLE_API_BASE || '').replace(/\/$/, '');
+function apiUrl(path){return API_BASE + path;}
+let activeJob = null;
+let pollTimer = null;
+const jobs = new Map();
+let jobOrder = [];
+let referenceFiles = [];
+let previewUrls = [];
+const statusNames = {queued:'排队中',running:'运行中',done:'已完成',failed:'失败'};
+const finalNames = {accepted:'全部通过',partial_improvement:'部分改善',original_a_retained:'保留原始 A'};
+function esc(value){return String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function fmt(value){if(value===null||value===undefined)return '—';if(typeof value==='number')return Number.isInteger(value)?String(value):value.toFixed(3);return esc(value);}
+function runUrl(path){if(!path)return '';const text=String(path);const marker='/runs/';if(text.includes(marker))return apiUrl('/runs/'+encodeURI(text.split(marker)[1]));if(text.startsWith('runs/'))return apiUrl('/'+encodeURI(text));return '';}
+function imageHtml(path,alt){const url=runUrl(path);return url?`<a class="image-frame" href="${url}" target="_blank"><img src="${url}" alt="${esc(alt)}" loading="lazy"></a>`:'<div class="hint">图片路径不可通过页面访问</div>';}
+function setStatus(status,message){$('status').className='status '+(status||'');$('status').textContent=statusNames[status]||status||'未开始';$('message').textContent=message||'';}
+function metricsTable(metrics){
+  const rows=[['动态 VQA',metrics.task_score],['全项通过率',metrics.full_requirement_rate],['G-PQ',metrics.g_pq]];
+  if(metrics.edit)rows.push(['编辑 SC',metrics.edit.sc],['编辑 E-PQ',metrics.edit.e_pq],['编辑 Overall',metrics.edit.overall]);
+  if(metrics.reference)rows.push(['参考 CPPF',metrics.reference.cppf]);
+  rows.push(['OCR F1',metrics.ocr?.f1],['OCR CER ↓',metrics.ocr?.cer],['文字布局',metrics.text_layout_score]);
+  return '<div class="scroll"><table><thead><tr><th>指标</th><th>值</th></tr></thead><tbody>'+rows.map(([key,value])=>`<tr><td>${key}</td><td>${fmt(value)}</td></tr>`).join('')+'</tbody></table></div>';
+}
+function checksTable(metrics){
+  const checks=metrics.checks||[];
+  if(!checks.length)return '<div class="hint">没有逐项检查记录。</div>';
+  return '<div class="scroll"><table><thead><tr><th>ID</th><th>检查项</th><th>分数</th><th>理由与证据</th></tr></thead><tbody>'+checks.map(item=>{const score=Number(item.score??0);const evidence=(item.evidence||[]).map(esc).join('<br>');return `<tr><td>${esc(item.id)}</td><td>${esc(item.question)}</td><td class="${score>=.99?'score-pass':'score-fail'}">${fmt(item.score)}</td><td>${esc(item.reason)}${evidence?'<br><span class="hint">'+evidence+'</span>':''}</td></tr>`;}).join('')+'</tbody></table></div>';
+}
+function attemptHtml(attempt,isOriginal=false,isSelected=false){
+  const prompt=attempt.prompt||attempt.repair_prompt||'';
+  const targets=(attempt.target_check_ids||[]).join(', ');
+  const status=isSelected?'<span class="status done">被选中</span>':isOriginal?'<span class="status">原始基线</span>':`<span class="status ${attempt.accepted?'done':''}">${attempt.accepted?'全部通过':'未严格通过'}</span>`;
+  return `<article class="attempt${isSelected?' selected':''}"><div class="attempt-head"><h3>${esc(attempt.name)}</h3>${status}</div>
+    ${imageHtml(attempt.image,attempt.name)}
+    <details><summary>查看 Prompt、指标和证据</summary><h4>本轮 Prompt</h4><pre>${esc(prompt)}</pre>${targets?`<p class="hint">联合修复目标：${esc(targets)}</p>`:''}${metricsTable(attempt.metrics||{})}<h4>逐项检查</h4>${checksTable(attempt.metrics||{})}<p class="hint">输出目录：${esc(attempt.output_dir)}</p></details></article>`;
+}
+function renderResult(result,jobId){
+  const original=result.original||{};
+  const finalStatus=finalNames[result.final_status]||result.final_status||'—';
+  const attempts=result.attempts||[];
+  const selectedName=['A','original_a_retained'].includes(result.final_source)?'A':result.final_source;
+  const candidates=[{name:'A',image:original.image,prompt:original.prompt,metrics:original.metrics,output_dir:original.output_dir},...attempts];
+  const selected=candidates.find(candidate=>candidate.name===selectedName);
+  const ordered=selected?[selected,...candidates.filter(candidate=>candidate!==selected)]:candidates;
+  $('results').innerHTML=`<div class="card"><div class="row"><h2 class="grow" style="margin:0">优化结果</h2><span class="status ${result.accepted?'done':'running'}">${esc(finalStatus)}</span></div>
+    <p>最终保留：<strong>${esc(result.final_source)}</strong>　最终动态 VQA：<strong>${fmt(result.final_metrics?.task_score)}</strong></p>
+    <div class="note">A 是原始比较基线；B1 从原始输入生成，B2–B6 才使用基图联合修复。没有全部通过时保留最佳零退化改善，完全并列选择靠后的候选。</div>
+    <a href="${apiUrl('/v1/jobs/'+encodeURIComponent(jobId)+'/result')}" target="_blank">下载/查看完整 JSON</a></div>
+    <div class="card"><h2>A / B 候选对比</h2><p class="hint">横向滚动查看所有候选；点击各项展开 Prompt、指标和证据。</p><div class="candidate-strip">${ordered.map(candidate=>attemptHtml(candidate,candidate.name==='A',candidate===selected)).join('')}</div></div>`;
+}
+function saveJobIds(){try{localStorage.setItem('dreamcycle_job_ids',JSON.stringify(jobOrder.slice(0,50)));}catch(error){}}
+function renderJobList(){
+  if(!jobOrder.length){$('job-list').innerHTML='<div class="hint">暂无任务</div>';return;}
+  $('job-list').innerHTML=jobOrder.map(id=>{const job=jobs.get(id)||{id,status:'queued'};return `<div class="job-item ${id===activeJob?'active':''}" data-job-id="${esc(id)}"><div class="job-meta"><div class="job-prompt">${esc(job.prompt||'任务 '+id)}</div><div class="job-id">${esc(id)}</div></div><span class="status ${job.status}">${statusNames[job.status]||job.status}</span></div>`;}).join('');
+  document.querySelectorAll('.job-item').forEach(item=>item.addEventListener('click',()=>showJob(item.dataset.jobId)));
+}
+function registerJob(job){
+  if(!jobs.has(job.id))jobOrder=[job.id,...jobOrder.filter(id=>id!==job.id)].slice(0,50);
+  jobs.set(job.id,job);saveJobIds();renderJobList();
+}
+function showJob(jobId){
+  const job=jobs.get(jobId);if(!job)return;activeJob=jobId;setStatus(job.status,job.message);renderJobList();
+  $('job-links').innerHTML=`<span class="hint">任务 ID：${esc(jobId)}</span>`;
+  if(job.status==='done'){renderResult(job.result,jobId);$('job-links').innerHTML+=` · <a href="${apiUrl('/v1/jobs/'+encodeURIComponent(jobId)+'/result')}" target="_blank">完整 JSON</a>`;}
+  else if(job.status==='failed'){$('results').innerHTML=`<div class="card error">${esc(job.error||'任务失败')}</div>`;}
+  else{$('results').innerHTML='<div class="card empty">任务正在等待或执行，可以继续提交其他任务。</div>';}
+}
+async function refreshJob(jobId,select=false){
+  try{
+    const response=await fetch(apiUrl('/v1/jobs/'+encodeURIComponent(jobId)),{cache:'no-store'});
+    const job=await response.json();
+    if(!response.ok){
+      if(response.status===404){registerJob({id:jobId,status:'failed',message:'任务不存在',error:job.detail||'任务不存在或服务已重启'});if(select||activeJob===jobId)showJob(jobId);}
+      if(select)throw new Error(job.detail||'任务不存在');return null;
+    }
+    registerJob(job);if(select||activeJob===jobId)showJob(jobId);return job;
+  }catch(error){if(select)$('form-error').textContent=error.message;return null;}
+}
+async function pollJobs(){
+  const pending=jobOrder.filter(id=>['queued','running'].includes(jobs.get(id)?.status));
+  await Promise.all(pending.map(id=>refreshJob(id)));
+}
+async function loadSavedJobs(){
+  let ids=[];try{ids=JSON.parse(localStorage.getItem('dreamcycle_job_ids')||'[]');}catch(error){}
+  jobOrder=Array.isArray(ids)?ids.slice(0,50):[];
+  jobOrder.forEach(id=>jobs.set(id,{id,status:'queued',message:'正在查询任务状态',prompt:''}));
+  renderJobList();await Promise.all(jobOrder.map(id=>refreshJob(id)));if(jobOrder[0])showJob(jobOrder[0]);
+}
+function fileKey(file){return `${file.name}-${file.size}-${file.lastModified}`;}
+function sortReferenceFiles(){referenceFiles.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:'base'}));}
+function renderReferenceFiles(){
+  previewUrls.forEach(url=>URL.revokeObjectURL(url));previewUrls=[];
+  sortReferenceFiles();
+  if(!referenceFiles.length){$('reference-file-list').innerHTML='<div class="hint">尚未选择参考图</div>';return;}
+  $('reference-file-list').innerHTML=referenceFiles.map((file,index)=>{
+    const url=URL.createObjectURL(file);previewUrls.push(url);
+    return `<div class="file-item"><img class="file-thumb" src="${url}" alt="${esc(file.name)}"><div class="file-info"><div class="file-name">${esc(file.name)}</div><div class="file-order">图 ${index+1} · ${(file.size/1024/1024).toFixed(2)} MB</div></div><button class="remove-file" type="button" data-index="${index}" aria-label="删除 ${esc(file.name)}">删除</button></div>`;
+  }).join('');
+  document.querySelectorAll('.remove-file').forEach(button=>button.addEventListener('click',()=>{referenceFiles.splice(Number(button.dataset.index),1);renderReferenceFiles();}));
+}
+$('input_images').addEventListener('change',event=>{
+  const existing=new Set(referenceFiles.map(fileKey));
+  Array.from(event.target.files).forEach(file=>{if(!existing.has(fileKey(file))){referenceFiles.push(file);existing.add(fileKey(file));}});
+  event.target.value='';renderReferenceFiles();
+});
+function filePayload(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve({filename:file.name,data:String(reader.result).split(',')[1]});
+    reader.onerror=()=>reject(new Error('读取图片失败：'+file.name));
+    reader.readAsDataURL(file);
+  });
+}
+$('job-form').addEventListener('submit',async event=>{
+  event.preventDefault();$('form-error').textContent='';$('submit').disabled=true;
+  try{
+    const prompts=[];
+    if($('prompt').value.trim())prompts.push($('prompt').value.trim());
+    $('batch_prompts').value.split('\n').map(value=>value.trim()).filter(Boolean).forEach(value=>prompts.push(value));
+    if(!prompts.length)throw new Error('请至少填写一个 Prompt');
+    if(!$('api_key').value.trim())throw new Error('请输入 ARK API Key');
+    sortReferenceFiles();
+    const sources=await Promise.all(referenceFiles.map(filePayload));
+    const existing=$('generated_image').files[0];
+    const existingPayload=existing?await filePayload(existing):null;
+    const errors=[];let firstJob=null;
+    for(const prompt of prompts){
+      const payload={
+        api_key:$('api_key').value.trim(),prompt,
+        generation_size:$('generation_size').value,
+        aspect_ratio:$('aspect_ratio').value,
+        generation_seed:$('generation_seed').value?Number($('generation_seed').value):null,
+        input_images:sources,generated_image:existingPayload
+      };
+      try{
+        const response=await fetch(apiUrl('/v1/jobs'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const job=await response.json();
+        if(!response.ok)throw new Error(job.detail||'创建任务失败');
+        registerJob(job);if(!firstJob)firstJob=job;
+      }catch(error){errors.push(prompt.slice(0,30)+'：'+error.message);}
+    }
+    if(firstJob)showJob(firstJob.id);
+    if(errors.length)$('form-error').textContent=errors.join('\n');
+  }catch(error){$('form-error').textContent=error.message;}
+  finally{$('submit').disabled=false;}
+});
+$('lookup').addEventListener('click',()=>{const id=$('job_lookup').value.trim();if(id){$('form-error').textContent='';refreshJob(id,true);}});
+$('job_lookup').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();$('lookup').click();}});
+$('aspect_ratio').addEventListener('change',event=>{
+  const option=event.target.selectedOptions[0];
+  $('generation_size').value=option.dataset.size||'';
+});
+$('generation_size').addEventListener('input',()=>{$('aspect_ratio').value='';});
+renderReferenceFiles();renderJobList();loadSavedJobs();pollTimer=setInterval(pollJobs,2500);
+fetch(apiUrl('/v1/config')).then(response=>response.json()).then(config=>{const size=config.settings?.seedream_size;if(size)$('generation_size').placeholder='默认：'+size;}).catch(()=>{});
+</script>
+</body>
+</html>

@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    EVA_RUNS_DIR=/tmp/eva-runs
+    DREAMCYCLE_RUNS_DIR=/tmp/dreamcycle-runs
 
 WORKDIR /app
 
@@ -12,8 +12,8 @@ RUN apt-get update \
     && pip install --no-cache-dir uv
 
 COPY pyproject.toml uv.lock ./
-COPY EVA ./EVA
+COPY dreamcycle ./dreamcycle
 RUN uv sync --frozen --no-dev
 
 EXPOSE 8010
-CMD ["/app/.venv/bin/uvicorn", "EVA.server.app:app", "--host", "0.0.0.0", "--port", "8010", "--workers", "1"]
+CMD ["/app/.venv/bin/uvicorn", "dreamcycle.server.app:app", "--host", "0.0.0.0", "--port", "8010", "--workers", "1"]

@@ -1,4 +1,4 @@
-{$EVA_DOMAIN} {
+{$DREAMCYCLE_DOMAIN} {
     encode zstd gzip
     reverse_proxy app:8010
 }

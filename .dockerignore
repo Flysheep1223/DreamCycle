@@ -7,5 +7,5 @@
 .pytest_cache
 .ruff_cache
 *.egg-info
-EVA/runs
+dreamcycle/runs
 .DS_Store

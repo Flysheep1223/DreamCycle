@@ -3,7 +3,7 @@ services:
     build: .
     env_file: .env
     environment:
-      EVA_RUNS_DIR: /tmp/eva-runs
+      DREAMCYCLE_RUNS_DIR: /tmp/dreamcycle-runs
     restart: unless-stopped
     expose:
       - "8010"
@@ -19,7 +19,7 @@ services:
     depends_on:
       - app
     environment:
-      EVA_DOMAIN: ${EVA_DOMAIN}
+      DREAMCYCLE_DOMAIN: ${DREAMCYCLE_DOMAIN}
     ports:
       - "80:80"
       - "443:443"

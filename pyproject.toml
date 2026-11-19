@@ -1,8 +1,8 @@
 [project]
-name = "seedream-eva"
+name = "dreamcycle"
 version = "0.3.0"
 description = "HTML client for Seedream generation, evaluation and iterative improvement"
-readme = "EVA/README.md"
+readme = "dreamcycle/README.md"
 requires-python = ">=3.11"
 dependencies = [
   "arkruntime>=0.1.0",
@@ -22,7 +22,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["EVA*"]
+include = ["dreamcycle*"]
 
 [tool.ruff]
 line-length = 100
