@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class TaskMode(str, Enum):
@@ -14,10 +14,38 @@ class TaskMode(str, Enum):
     REFERENCE_GENERATION = "reference_generation"
 
 
+class ActionRegion(BaseModel):
+    x: float = Field(ge=0, le=1)
+    y: float = Field(ge=0, le=1)
+    width: float = Field(gt=0, le=1)
+    height: float = Field(gt=0, le=1)
+
+
+class ActionSpec(BaseModel):
+    subject: str
+    target: str
+    expected_direction: Literal["toward", "away"]
+    region: ActionRegion | None = None
+    panel_index: int | None = Field(default=None, ge=1)
+
+
+class StoryboardLayout(BaseModel):
+    panel_count: int = Field(gt=0)
+    rows: int | None = Field(default=None, gt=0)
+    columns: int | None = Field(default=None, gt=0)
+    reading_order: Literal["left_to_right", "top_to_bottom", "right_to_left", "bottom_to_top"] = (
+        "left_to_right"
+    )
+
+
 class CheckItem(BaseModel):
     id: str
     question: str
     expected: str = "yes"
+    evidence_type: str = "visual_semantic"
+    required_evidence: list[str] = Field(default_factory=list)
+    action: ActionSpec | None = None
+    depends_on: list[str] = Field(default_factory=list)
 
 
 class RouteDecision(BaseModel):
@@ -32,6 +60,7 @@ class RouteDecision(BaseModel):
     target_texts: list[str] = Field(default_factory=list)
     task_checklist: list[CheckItem] = Field(default_factory=list)
     preservation_checklist: list[CheckItem] = Field(default_factory=list)
+    storyboard: StoryboardLayout | None = None
 
 
 class JudgeCheckResult(BaseModel):
@@ -39,11 +68,27 @@ class JudgeCheckResult(BaseModel):
     question: str = ""
     score: float = Field(ge=0, le=1)
     reason: str = ""
+    evidence: list[str] = Field(default_factory=list)
 
 
 class EditScore(BaseModel):
-    sc: float = Field(ge=0, le=10)
-    pq: float = Field(ge=0, le=10)
+    sc: float | None = Field(default=None, ge=0, le=10)
+    e_pq: float | None = Field(default=None, ge=0, le=10)
+    edit_success: float | None = Field(default=None, ge=0, le=10)
+    overedit_control: float | None = Field(default=None, ge=0, le=10)
+    naturalness: float | None = Field(default=None, ge=0, le=10)
+    artifact_free: float | None = Field(default=None, ge=0, le=10)
+
+    def derive(self) -> EditScore:
+        if self.edit_success is not None and self.overedit_control is not None:
+            self.sc = min(self.edit_success, self.overedit_control)
+        if self.naturalness is not None and self.artifact_free is not None:
+            self.e_pq = min(self.naturalness, self.artifact_free)
+        return self
+
+    @model_validator(mode="after")
+    def derive_sc_pq(self) -> EditScore:
+        return self.derive()
 
 
 class ReferenceScore(BaseModel):
@@ -53,9 +98,8 @@ class ReferenceScore(BaseModel):
 
 class JudgeResult(BaseModel):
     task_score: float = Field(ge=0, le=1)
-    preservation_score: float | None = Field(default=None, ge=0, le=1)
     text_layout_score: float | None = Field(default=None, ge=0, le=1)
-    pq: float = Field(ge=0, le=10)
+    g_pq: float = Field(ge=0, le=10)
     checks: list[JudgeCheckResult] = Field(default_factory=list)
     edit: EditScore | None = None
     reference: ReferenceScore | None = None

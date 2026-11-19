@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    env_file: .env
+    environment:
+      EVA_RUNS_DIR: /tmp/eva-runs
+    restart: unless-stopped
+    expose:
+      - "8010"
+    logging:
+      driver: json-file
+      options:
+        max-size: 20m
+        max-file: "3"
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    depends_on:
+      - app
+    environment:
+      EVA_DOMAIN: ${EVA_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: 20m
+        max-file: "3"
+
+volumes:
+  caddy_data:
+  caddy_config:

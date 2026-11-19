@@ -8,6 +8,7 @@ from typing import Any
 
 from arkruntime import Ark
 
+from EVA.ark.validation import SchemaValidationError, validate_json_schema
 from EVA.config import Settings
 
 
@@ -43,36 +44,71 @@ class ArkClient:
         schema: dict,
         schema_name: str,
     ) -> dict:
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user_content},
+        ]
+        last_error = None
+        for attempt in range(2):
+            def request() -> Any:
+                return self._client.chat.completions.create(
+                    model=self.settings.vlm_model,
+                    messages=messages,
+                    response_format={
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": schema_name,
+                            "description": "Structured image evaluation response",
+                            "schema": schema,
+                            "strict": True,
+                        },
+                    },
+                    temperature=self.settings.vlm_temperature,
+                    thinking={"type": "disabled"},
+                    max_tokens=self.settings.vlm_max_tokens,
+                )
+
+            response = await asyncio.to_thread(request)
+            text = self._content_text(response).strip()
+            if text.startswith("```"):
+                text = text.removeprefix("```json").removeprefix("```")
+                text = text.removesuffix("```").strip()
+            # VIEScore wraps JSON with ||V^=^V|| delimiters; parse only the JSON object.
+            start, end = text.find("{"), text.rfind("}")
+            if start >= 0 and end > start:
+                text = text[start : end + 1]
+            try:
+                payload = json.loads(text)
+                validate_json_schema(payload, schema)
+                return payload
+            except (json.JSONDecodeError, SchemaValidationError, TypeError) as exc:
+                last_error = exc
+                if attempt == 0:
+                    messages.append(
+                        {
+                            "role": "user",
+                            "content": (
+                                f"上一响应未通过 {schema_name} 硬结构校验：{exc}。"
+                                "请重新生成完整 JSON，只修复指出的字段，不得遗漏必填字段、"
+                                "改变分数尺度、添加额外字段或返回解释性文字。"
+                            ),
+                        }
+                    )
+        raise ValueError(f"VLM response failed {schema_name} validation after retry: {last_error}")
+
+    async def chat_text(self, messages: list[dict]) -> str:
+        """Run a plain-text request for official Score: N protocols."""
         def request() -> Any:
             return self._client.chat.completions.create(
                 model=self.settings.vlm_model,
-                messages=[
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user_content},
-                ],
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": schema_name,
-                        "description": "Structured image evaluation response",
-                        "schema": schema,
-                        "strict": True,
-                    },
-                },
+                messages=messages,
                 temperature=self.settings.vlm_temperature,
                 thinking={"type": "disabled"},
                 max_tokens=self.settings.vlm_max_tokens,
             )
 
         response = await asyncio.to_thread(request)
-        text = self._content_text(response).strip()
-        if text.startswith("```"):
-            text = text.removeprefix("```json").removeprefix("```")
-            text = text.removesuffix("```").strip()
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise ValueError(f"VLM returned invalid JSON: {text[:500]}") from exc
+        return self._content_text(response).strip()
 
     async def generate_images(
         self,

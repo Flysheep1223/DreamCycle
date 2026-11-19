@@ -27,20 +27,41 @@ class ScoreReporter:
         edit = None
         if judge.edit:
             edit = {
-                **judge.edit.model_dump(),
-                "overall": (judge.edit.sc * judge.edit.pq) ** 0.5,
+                **judge.edit.model_dump(exclude_none=True),
+                "overall": (judge.edit.sc * judge.edit.e_pq) ** 0.5,
+            }
+        aggregation = judge_raw.get("aggregation")
+        aggregation_summary = None
+        if aggregation:
+            aggregation_summary = {
+                key: aggregation[key]
+                for key in (
+                    "strategy",
+                    "runs",
+                    "successful_runs",
+                    "tie_break",
+                    "minimum_mode_agreement",
+                    "tied_fields",
+                    "protocol_retries",
+                )
+            }
+        reference = None
+        if judge.reference is not None:
+            reference = {
+                **judge.reference.model_dump(),
+                "cppf": judge.reference.cp * judge.reference.pf,
             }
         metrics: dict[str, Any] = {
             "task_score": judge.task_score,
-            "preservation_score": judge.preservation_score,
             "text_layout_score": judge.text_layout_score,
-            "perceptual_quality": judge.pq,
+            "g_pq": judge.g_pq,
             "edit": edit,
-            "reference": judge.reference.model_dump() if judge.reference else None,
+            "reference": reference,
             "ocr": ocr.model_dump() if ocr else None,
             "checks": [check.model_dump() for check in judge.checks],
             "full_requirement_rate": full_rate,
             "minimum_requirement_score": minimum_requirement,
+            "judge_aggregation": aggregation_summary,
         }
         return EvaluationResult(
             image=image,

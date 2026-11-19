@@ -115,8 +115,7 @@ class PromptAdvisor:
             },
             "prompt_suggestion_excluded_context": [
                 "task_score",
-                "preservation_score",
-                "perceptual_quality",
+                "g_pq",
                 "judge reasons",
                 "OCR results",
                 "evaluation audit opinions",

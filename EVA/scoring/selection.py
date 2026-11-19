@@ -7,30 +7,23 @@ from typing import Any
 # (dotted metric path, preferred direction). Missing metrics on both sides are ignored.
 METRIC_RULES = (
     ("task_score", "higher"),
-    ("preservation_score", "higher"),
-    ("perceptual_quality", "higher"),
+    ("g_pq", "higher"),
     ("text_layout_score", "higher"),
     ("full_requirement_rate", "higher"),
-    ("minimum_requirement_score", "higher"),
-    ("ocr.accuracy", "higher"),
-    ("ocr.ned", "higher"),
     ("ocr.cer", "lower"),
-    ("ocr.precision", "higher"),
-    ("ocr.recall", "higher"),
     ("ocr.f1", "higher"),
     ("edit.sc", "higher"),
-    ("edit.pq", "higher"),
-    ("reference.cp", "higher"),
-    ("reference.pf", "higher"),
+    ("edit.e_pq", "higher"),
+    ("reference.cppf", "higher"),
 )
 RANK_PATHS = (
     "task_score",
     "full_requirement_rate",
-    "minimum_requirement_score",
-    "perceptual_quality",
-    "preservation_score",
-    "ocr.ned",
+    "g_pq",
     "text_layout_score",
+    "edit.sc",
+    "edit.e_pq",
+    "reference.cppf",
 )
 EPSILON = 1e-9
 
@@ -109,5 +102,8 @@ def select_pareto_candidate(
     accepted = [index for index, decision in enumerate(decisions) if decision["accepted"]]
     if not accepted:
         return None, decisions
-    best = max(accepted, key=lambda index: rank_key(candidates[index].get("metrics", {})))
+    best = max(
+        accepted,
+        key=lambda index: (rank_key(candidates[index].get("metrics", {})), index),
+    )
     return best, decisions

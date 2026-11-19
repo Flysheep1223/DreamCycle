@@ -1,0 +1,11 @@
+.git
+.env
+.venv
+.claude
+**/__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+*.egg-info
+EVA/runs
+.DS_Store
