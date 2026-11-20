@@ -179,9 +179,25 @@ class VLMJudge:
                         raise ValueError(
                             f"VLM omitted deduction reasons: {missing_deduction_reasons}"
                         )
-                    raw["_deduction_reason_fallback"] = await self._deduction_reason_fallback(
-                        result, prompt, generated_image, missing_deduction_reasons
-                    )
+                    try:
+                        raw["_deduction_reason_fallback"] = await self._deduction_reason_fallback(
+                            result, prompt, generated_image, missing_deduction_reasons
+                        )
+                    except (ValueError, TypeError) as exc:
+                        raw["_deduction_reason_fallback_error"] = str(exc)
+                        for check in result.checks:
+                            if check.id not in missing_deduction_reasons:
+                                continue
+                            evidence = next(
+                                (str(item).strip() for item in check.evidence if str(item).strip()),
+                                "",
+                            )
+                            if evidence:
+                                check.reason = f"扣分点：{evidence}"
+                            elif check.reason.strip():
+                                check.reason = f"扣分点：{check.reason.strip()}"
+                            else:
+                                check.reason = "扣分点：可见证据不足，无法确认该项满足要求"
                 if editing:
                     result.edit = EditScore(
                         edit_success=official_sc_raw["score"][0],
