@@ -33,9 +33,11 @@ class TosStorage:
 
     def run_relative_path(self, path: str | Path) -> str | None:
         parts = Path(path).parts
-        if "runs" not in parts:
+        markers = {"runs", "dreamcycle-runs"}
+        indices = [index for index, part in enumerate(parts) if part in markers]
+        if not indices:
             return None
-        index = len(parts) - 1 - parts[::-1].index("runs")
+        index = indices[-1]
         relative = PurePosixPath(*parts[index + 1 :])
         return relative.as_posix() if relative.parts else None
 

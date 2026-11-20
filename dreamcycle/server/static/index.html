@@ -78,7 +78,7 @@ const statusNames = {queued:'排队中',running:'运行中',done:'已完成',fai
 const finalNames = {accepted:'全部通过',partial_improvement:'部分改善',original_a_retained:'保留原始 A'};
 function esc(value){return String(value ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function fmt(value){if(value===null||value===undefined)return '—';if(typeof value==='number')return Number.isInteger(value)?String(value):value.toFixed(3);return esc(value);}
-function runUrl(path){if(!path)return '';const text=String(path);const marker='/runs/';if(text.includes(marker))return apiUrl('/runs/'+encodeURI(text.split(marker)[1]));if(text.startsWith('runs/'))return apiUrl('/'+encodeURI(text));return '';}
+function runUrl(path){if(!path)return '';const text=String(path);for(const marker of ['/dreamcycle-runs/','/runs/']){if(text.includes(marker))return apiUrl('/runs/'+encodeURI(text.split(marker)[1]));}if(text.startsWith('runs/'))return apiUrl('/'+encodeURI(text));return '';}
 function imageHtml(path,alt){const url=runUrl(path);return url?`<a class="image-frame" href="${url}" target="_blank"><img src="${url}" alt="${esc(alt)}" loading="lazy"></a>`:'<div class="hint">图片路径不可通过页面访问</div>';}
 function setStatus(status,message){$('status').className='status '+(status||'');$('status').textContent=statusNames[status]||status||'未开始';$('message').textContent=message||'';}
 function metricsTable(metrics){
