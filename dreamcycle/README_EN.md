@@ -61,7 +61,7 @@ Images are served from the local cache when available, or through short-lived si
 
 ## Features
 
-- Submit one Prompt or a batch of Prompts, one per line;
+- Submit a single Prompt;
 - Submit more jobs while other jobs are running, and look up jobs by ID;
 - Upload multiple reference images over multiple selections, naturally sorted by filename and individually removable;
 - Optionally provide an existing output A;

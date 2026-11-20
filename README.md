@@ -1,5 +1,7 @@
 # DreamCycle & DreamIndicators
 
+[English README](README_EN.md)
+
 > 面向 Seedream 的“生成—评估—改写—验收”闭环框架：用多标签路由和可解释的多维评估指导 Prompt 优化，在不降低其他受保护指标的前提下，持续改进图像质量与指令一致性。
 
 **DreamCycle** 负责图片生成、反馈改写、联合修复和最佳候选选择；**DreamIndicators** 负责路由、动态检查项、VLM/OCR 评审、指标聚合与验收。
