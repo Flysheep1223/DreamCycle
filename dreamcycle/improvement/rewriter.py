@@ -25,8 +25,8 @@ class FeedbackPromptRewriter:
         input_images: list[str],
     ) -> tuple[AdviceReport, dict]:
         checks = result.metrics.get("checks", [])
-        failed = [item for item in checks if item.get("score", 0) < 0.99]
-        passed = [item for item in checks if item.get("score", 0) >= 0.99]
+        failed = [item for item in checks if item.get("score", 0) < 0.90]
+        passed = [item for item in checks if item.get("score", 0) >= 0.90]
         payload = {
             "original_user_prompt": prompt,
             "failed_checks": failed,

@@ -71,7 +71,7 @@ def has_repair_potential(original: dict, candidate: dict) -> bool:
     return improved > 0 and degraded <= improved
 
 
-def all_requirements_pass(metrics: dict, threshold: float = 0.99) -> bool:
+def all_requirements_pass(metrics: dict, threshold: float = 0.90) -> bool:
     checks = metrics.get("checks", [])
     return bool(checks) and all(item.get("score", 0) >= threshold for item in checks)
 

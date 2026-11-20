@@ -97,7 +97,7 @@ Every re-evaluation uses the original Prompt and A's fixed route. Repair instruc
 | Concept preservation | `reference.cp` | 0–4; preservation of the reference subject or concept |
 | Prompt following | `reference.pf` | 0–4; completion of the new scene and instructions |
 | Reference joint metric | `reference.cppf` | 0–16; `CP × PF`, used for reference acceptance |
-| Full requirement rate | `full_requirement_rate` | 0–1; fraction of checks scoring at least 0.99 |
+| Full requirement rate | `full_requirement_rate` | 0–1; fraction of checks scoring at least 0.90 |
 | Minimum check score | `minimum_requirement_score` | 0–1; diagnostic minimum across checks |
 
 Fields that do not apply are `null`, not zero. There is no weighted cross-metric total score beyond the editing Overall and reference CPPF.
@@ -146,7 +146,7 @@ High CP does not imply high PF: copying the reference may preserve the subject w
 ### Checklist statistics
 
 ```text
-full_requirement_rate = checks scoring ≥ 0.99 / all checks
+full_requirement_rate = checks scoring ≥ 0.90 / all checks
 minimum_requirement_score = minimum score across all checks
 ```
 
@@ -156,7 +156,7 @@ Both task and preservation checks contribute to these statistics. Full requireme
 
 Strict success requires all three conditions:
 
-1. Every task and preservation check reaches `0.99`;
+1. Every task and preservation check reaches `0.90`;
 2. At least one protected metric improves over original A;
 3. No protected metric regresses.
 

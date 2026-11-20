@@ -25,7 +25,7 @@ class ScoreReporter:
     ) -> EvaluationResult:
         requirement_scores = [check.score for check in judge.checks]
         full_rate = (
-            sum(score >= 0.99 for score in requirement_scores) / len(requirement_scores)
+            sum(score >= 0.90 for score in requirement_scores) / len(requirement_scores)
             if requirement_scores
             else None
         )

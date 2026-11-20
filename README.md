@@ -112,7 +112,7 @@ B1 使用完整改写 Prompt 从原始输入重新生成；B2 起以当前可修
 | 主体/概念保持 | `reference.cp` | 0–4；参考主体或概念保持 |
 | 新 Prompt 遵循 | `reference.pf` | 0–4；新场景和指令完成情况 |
 | 参考图联合指标 | `reference.cppf` | 0–16；`CP × PF`，用于参考图验收 |
-| 全项通过率 | `full_requirement_rate` | 0–1；得分 ≥0.99 的任务与保持检查项比例 |
+| 全项通过率 | `full_requirement_rate` | 0–1；得分 ≥0.90 的任务与保持检查项比例 |
 | 最低检查项 | `minimum_requirement_score` | 0–1；全部检查项的最低分，仅作诊断 |
 
 不适用字段使用 `null`，不将“未启用”当成 0 分。除编辑 Overall 和参考图 CPPF 外，不计算跨指标加权总分。
@@ -161,7 +161,7 @@ CP 高不代表 PF 高：复制参考图可能保持主体，却没有完成新�
 ### 检查项统计
 
 ```text
-full_requirement_rate = 得分 ≥0.99 的检查项数 / 全部检查项数
+full_requirement_rate = 得分 ≥0.90 的检查项数 / 全部检查项数
 minimum_requirement_score = 全部检查项中的最低分
 ```
 
@@ -173,7 +173,7 @@ minimum_requirement_score = 全部检查项中的最低分
 
 同时满足：
 
-1. 全部任务与保持检查项均达到 `0.99`；
+1. 全部任务与保持检查项均达到 `0.90`；
 2. 相对原始 A 至少一项受保护指标改善；
 3. 所有受保护指标均不退化。
 
