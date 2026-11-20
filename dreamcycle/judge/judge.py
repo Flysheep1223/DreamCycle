@@ -167,6 +167,15 @@ class VLMJudge:
                     missing_evidence = [check.id for check in result.checks if not check.evidence]
                     if missing_evidence:
                         raise ValueError(f"VLM omitted required evidence: {missing_evidence}")
+                missing_deduction_reasons = [
+                    check.id
+                    for check in result.checks
+                    if check.score < 0.99 and not check.reason.strip().startswith("扣分点：")
+                ]
+                if missing_deduction_reasons:
+                    raise ValueError(
+                        f"VLM omitted deduction reasons: {missing_deduction_reasons}"
+                    )
                 if editing:
                     result.edit = EditScore(
                         edit_success=official_sc_raw["score"][0],
