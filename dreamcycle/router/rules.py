@@ -152,6 +152,7 @@ EVIDENCE_REQUIREMENTS = {
     "lighting": ["light_direction", "shadow_softness", "material_response"],
     "layout": ["x_order", "baseline_alignment", "spacing_uniformity", "overlap"],
     "directional_action": ["start_location", "target_location", "heading", "trajectory"],
+    "anatomical_side": ["body_facing", "shoulder_side", "handedness", "image_side", "held_object"],
     "material": ["specular_pattern", "diffuse_pattern", "texture"],
     "identity": ["identity_features", "consistency"],
     "text": ["content", "carrier", "position", "duplicates"],
@@ -164,6 +165,8 @@ def _infer_evidence_type(item: CheckItem) -> str:
     if item.action is not None:
         return "directional_action"
     text = f"{item.id} {item.question}".lower()
+    if any(word in text for word in ("左手", "右手", "自身左", "自身右", "背对", "面对", "解剖学")):
+        return "anatomical_side"
     if any(word in text for word in ("光照", "光线", "阴影", "侧光", "逆光", "背光", "自然光", "高光", "反射")):
         return "lighting"
     if any(word in text for word in ("材质", "丝绸", "棉布", "金属", "玻璃", "纹理", "高光", "漫反射")):

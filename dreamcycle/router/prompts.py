@@ -42,6 +42,7 @@ CHECK_ITEM_SCHEMA = {
                 "lighting",
                 "layout",
                 "directional_action",
+                "anatomical_side",
                 "material",
                 "identity",
                 "text",
