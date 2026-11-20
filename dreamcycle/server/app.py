@@ -187,7 +187,7 @@ def get_job_or_404(job_id: str) -> Job:
                 id=job_id,
                 run_dir=run_dir,
                 status="done",
-                message="完成（从 TOS 恢复）",
+                message="完成",
                 prompt=result.get("original", {}).get("prompt", ""),
                 result=result,
             )

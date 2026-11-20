@@ -10,7 +10,7 @@
   </style>
 </head>
 <body>
-<header><div class="wrap"><h1>DreamCycle · Seedream 图像评估与优化</h1><p>生成 A → 评估 → Prompt 改写 → B1 → 最多五轮联合修复</p></div></header>
+<header><div class="wrap"><h1>DreamCycle · Seedream 图像评估与优化</h1></div></header>
 <main>
   <div class="layout">
     <section class="card">
@@ -18,13 +18,10 @@
       <form id="job-form">
         <label for="api_key">ARK API Key <span class="hint">必填，使用你自己的 key</span></label>
         <input id="api_key" name="api_key" type="password" required autocomplete="off" spellcheck="false" placeholder="输入你的 ARK_API_KEY">
-        <div class="hint">仅用于本次任务的 Ark 请求；模型 endpoint 沿用服务器配置。key 不写入结果文件，也不保存到浏览器。</div>
         <label for="prompt">单条 Prompt <span class="hint">与批量任务至少填写一项</span></label>
         <textarea id="prompt" name="prompt" placeholder="描述要生成或编辑的画面、主体、布局、材质、光照和文字"></textarea>
-        <details><summary>批量提交任务（每行一个 Prompt）</summary><textarea id="batch_prompts" placeholder="第一行是第一个任务&#10;第二行是第二个任务&#10;每个任务独立评估和优化"></textarea><div class="hint">批量任务共用本页的 key、源图和生成参数，提交后可在右侧任务列表统一查看。</div></details>
         <label for="input_images">源图 / 参考图 <span class="hint">可多选</span></label>
         <input id="input_images" name="input_images" type="file" accept="image/png,image/jpeg,image/webp" multiple>
-        <div class="hint">可多次选择，图片会累积添加并按文件名排序；没有源图时走文生图。</div>
         <div id="reference-file-list" class="file-list"></div>
         <label for="generated_image">已有输出 A <span class="hint">可选</span></label>
         <input id="generated_image" name="generated_image" type="file" accept="image/png,image/jpeg,image/webp">
@@ -40,7 +37,6 @@
           <option value="3:2" data-size="2496x1664">3:2 · 横向</option>
           <option value="2:3" data-size="1664x2496">2:3 · 竖向</option>
         </select>
-        <div class="hint">选择比例会自动填充精确尺寸；手动修改尺寸时以手动值为准。</div>
         <div class="row">
           <div class="grow"><label for="generation_size">生成尺寸</label><input id="generation_size" name="generation_size" placeholder="留空使用默认尺寸"></div>
           <div><label for="generation_seed">Seed</label><input id="generation_seed" name="generation_seed" type="number" placeholder="可选"></div>
@@ -49,7 +45,6 @@
         <button class="btn" id="submit" type="submit">开始生成与优化</button>
         <span id="form-error" class="error"></span>
       </form>
-      <div class="footer">上传限制：单张 25MB；PNG/JPG/WebP。所有结果保存在本地 dreamcycle/runs。</div>
     </section>
     <section>
       <div class="card">
@@ -112,7 +107,7 @@ function renderResult(result,jobId){
   $('results').innerHTML=`<div class="card"><div class="row"><h2 class="grow" style="margin:0">优化结果</h2><span class="status ${result.accepted?'done':'running'}">${esc(finalStatus)}</span></div>
     <p>最终保留：<strong>${esc(result.final_source)}</strong>　最终动态 VQA：<strong>${fmt(result.final_metrics?.task_score)}</strong></p>
     <div class="note">A 是原始比较基线；B1 从原始输入生成，B2–B6 才使用基图联合修复。没有全部通过时保留最佳零退化改善，完全并列选择靠后的候选。</div>
-    <a href="${apiUrl('/v1/jobs/'+encodeURIComponent(jobId)+'/result')}" target="_blank">下载/查看完整 JSON</a></div>
+    </div>
     <div class="card"><h2>A / B 候选对比</h2><p class="hint">横向滚动查看所有候选；点击各项展开 Prompt、指标和证据。</p><div class="candidate-strip">${ordered.map(candidate=>attemptHtml(candidate,candidate.name==='A',candidate===selected)).join('')}</div></div>`;
 }
 function saveJobIds(){try{localStorage.setItem('dreamcycle_job_ids',JSON.stringify(jobOrder.slice(0,50)));}catch(error){}}
@@ -127,8 +122,8 @@ function registerJob(job){
 }
 function showJob(jobId){
   const job=jobs.get(jobId);if(!job)return;activeJob=jobId;setStatus(job.status,job.message);renderJobList();
-  $('job-links').innerHTML=`<span class="hint">任务 ID：${esc(jobId)}</span>`;
-  if(job.status==='done'){renderResult(job.result,jobId);$('job-links').innerHTML+=` · <a href="${apiUrl('/v1/jobs/'+encodeURIComponent(jobId)+'/result')}" target="_blank">完整 JSON</a>`;}
+  $('job-links').innerHTML='';
+  if(job.status==='done'){renderResult(job.result,jobId);}
   else if(job.status==='failed'){$('results').innerHTML=`<div class="card error">${esc(job.error||'任务失败')}</div>`;}
   else{$('results').innerHTML='<div class="card empty">任务正在等待或执行，可以继续提交其他任务。</div>';}
 }
@@ -158,7 +153,7 @@ function sortReferenceFiles(){referenceFiles.sort((a,b)=>a.name.localeCompare(b.
 function renderReferenceFiles(){
   previewUrls.forEach(url=>URL.revokeObjectURL(url));previewUrls=[];
   sortReferenceFiles();
-  if(!referenceFiles.length){$('reference-file-list').innerHTML='<div class="hint">尚未选择参考图</div>';return;}
+  if(!referenceFiles.length){$('reference-file-list').innerHTML='';return;}
   $('reference-file-list').innerHTML=referenceFiles.map((file,index)=>{
     const url=URL.createObjectURL(file);previewUrls.push(url);
     return `<div class="file-item"><img class="file-thumb" src="${url}" alt="${esc(file.name)}"><div class="file-info"><div class="file-name">${esc(file.name)}</div><div class="file-order">图 ${index+1} · ${(file.size/1024/1024).toFixed(2)} MB</div></div><button class="remove-file" type="button" data-index="${index}" aria-label="删除 ${esc(file.name)}">删除</button></div>`;
@@ -183,7 +178,6 @@ $('job-form').addEventListener('submit',async event=>{
   try{
     const prompts=[];
     if($('prompt').value.trim())prompts.push($('prompt').value.trim());
-    $('batch_prompts').value.split('\n').map(value=>value.trim()).filter(Boolean).forEach(value=>prompts.push(value));
     if(!prompts.length)throw new Error('请至少填写一个 Prompt');
     if(!$('api_key').value.trim())throw new Error('请输入 ARK API Key');
     sortReferenceFiles();
