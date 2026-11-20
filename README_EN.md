@@ -32,7 +32,7 @@ The system does not simply return the last image:
 - **Multi-label task routing**: text-to-image, image editing, reference generation, and mixed tasks. OCR can be enabled as an additional evaluation path.
 - **Dynamic VQA**: generate checks for objects, attributes, counts, positions, relationships, style, and text from the Prompt.
 - **Official protocols plus project extensions**: VIEScore editing sub-scores and DreamBench++ CP/PF evaluation.
-- **Concrete deduction reasons**: every score below `0.99` must include a specific `扣分点：` reason. Vague reasons trigger a corrective retry and are passed to the Prompt rewriter and joint-repair advisor.
+- **Concrete deduction reasons when available**: low scores are encouraged to include specific `扣分点：` reasons and evidence. Missing or vague reasons no longer block evaluation or trigger mandatory retries.
 - **Repeated evaluation aggregation**: ten independent VLM evaluations by default, using per-field modes with the lower score on ties.
 - **Independent OCR**: RapidOCR runs once and is kept separate from VLM layout evaluation.
 - **Best checkpoints and no-regression acceptance**: candidates are always compared with original A, not just with the previous round.

@@ -87,7 +87,7 @@ docker compose up -d --build
 
 ## 扣分理由与改进
 
-- 当检查项 `score < 0.99` 时，评审必须返回以“扣分点：”开头的具体理由，说明未满足条件、可见缺陷或证据不足；空泛理由会触发纠偏重试。
+- 当检查项 `score < 0.99` 时，评审建议返回具体扣分理由和证据；未提供具体理由时不阻断评审，也不再强制重试。
 - `FeedbackPromptRewriter` 和 `TargetedRepairAdvisor` 都会读取失败项的 `reason` 与 `evidence`，据此改写 Prompt 和生成联合修复指令，而不是只根据分数重写。
 
 ## 当前验收逻辑

@@ -72,7 +72,7 @@ Images are served from the local cache when available, or through short-lived si
 
 ## Deduction reasons and improvement
 
-- When a check scores below `0.99`, the judge must return a reason beginning with `扣分点：` and explain the unmet condition, visible defect, or missing evidence. Vague reasons trigger a corrective retry.
+- When a check scores below `0.99`, the judge is encouraged to return a concrete reason and evidence. Missing reasons no longer block evaluation or trigger a mandatory retry.
 - `FeedbackPromptRewriter` and `TargetedRepairAdvisor` receive the failed checks, their `reason`, and their `evidence`. They use these concrete defects to rewrite Prompts and generate joint repair instructions, rather than reacting only to numeric scores.
 
 ## Acceptance and base-image selection

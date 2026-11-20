@@ -99,7 +99,7 @@ preservation_checklist 仅用于逐项检查，不再单独汇总 preservation_s
 若任务要求尺寸一致，还要比较尺寸与比例；基线明显错位、间距明显不均或明显重叠时应给部分分或0分。
 
 每条 reason 最多60个汉字，只写最终判断和主要证据，不要输出自我对话、反复改口或推理过程。
-当 score < 0.99 时，reason 必须以“扣分点：”开头，具体写出未满足的条件、可见缺陷或证据不足之处；
+当 score < 0.99 时，reason 建议写出具体缺陷和扣分依据；无法判断时可写证据不足，不得为了补理由而猜测。
 不能只写“基本符合”“略有问题”“不够理想”等空泛结论。score ≥ 0.99 时简要说明通过依据。
 每个检查项必须先输出 evidence 数组，逐项列出与 required_evidence 对应的可见事实；
 没有可见证据时填 ["unclear"]，对应检查项不得超过0.5分，不得用笼统“有光、有杯子、像并排”代替证据。
@@ -185,35 +185,6 @@ EDIT_PQ_SCHEMA = {
     "additionalProperties": False,
 }
 
-DEDUCTION_REASON_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "reasons": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-                "type": "object",
-                "properties": {
-                    "id": {"type": "string", "minLength": 1},
-                    "reason": {"type": "string", "minLength": 1},
-                },
-                "required": ["id", "reason"],
-                "additionalProperties": False,
-            },
-        }
-    },
-    "required": ["reasons"],
-    "additionalProperties": False,
-}
-
-DEDUCTION_REASON_SYSTEM_PROMPT = """
-你只负责补写低分检查项的具体扣分理由，不重新评分，不改变任何检查项的分数。
-对给定检查项逐项返回 id 和 reason。reason 必须以“扣分点：”开头，具体说明未满足的条件、
-可见缺陷或证据不足，不得只写“基本符合”“略有问题”或复述分数。
-理由应依据图片和已有 evidence，最多60个汉字，不输出自我对话或推理过程。
-只返回符合 schema 的 JSON。
-""".strip()
-
 TEXT_LAYOUT_SCHEMA = {
     "type": "object",
     "properties": {
@@ -237,6 +208,6 @@ JUDGE_RETRY_SUFFIX = (
     "preservation_checklist 的全部问题，逐项原样返回 id、question、score、reason，"
     "不得省略身份保持项，也不得只返回 task_score。每个检查项还必须返回非空 evidence 数组，"
     "逐项给出与 required_evidence 对应的可见事实；无法确认时写 unclear，不得省略 evidence。"
-    "score<0.99 的 reason 必须以“扣分点：”开头，写出具体缺陷和扣分依据，不得空泛描述。"
+    "score<0.99 的 reason 建议写出具体缺陷和扣分依据；无法判断时可写证据不足，不得为了补理由而猜测。"
     "若 needs_ocr=true 且 target_texts 非空，text_layout_score 必须返回 0–1 数值，不得为 null。"
 )
