@@ -17,6 +17,8 @@ from dreamcycle.judge.dreambench_prompts import (
 )
 from dreamcycle.judge.errors import JudgeValidationError
 from dreamcycle.judge.prompts import (
+    DEDUCTION_REASON_SCHEMA,
+    DEDUCTION_REASON_SYSTEM_PROMPT,
     EDIT_PQ_SCHEMA,
     EDIT_PQ_SYSTEM_PROMPT,
     JUDGE_RETRY_SUFFIX,
@@ -173,8 +175,12 @@ class VLMJudge:
                     if check.score < 0.99 and not check.reason.strip().startswith("扣分点：")
                 ]
                 if missing_deduction_reasons:
-                    raise ValueError(
-                        f"VLM omitted deduction reasons: {missing_deduction_reasons}"
+                    if attempt == 0:
+                        raise ValueError(
+                            f"VLM omitted deduction reasons: {missing_deduction_reasons}"
+                        )
+                    raw["_deduction_reason_fallback"] = await self._deduction_reason_fallback(
+                        result, prompt, generated_image, missing_deduction_reasons
                     )
                 if editing:
                     result.edit = EditScore(
@@ -216,6 +222,39 @@ class VLMJudge:
             except (ValueError, TypeError) as exc:
                 last_error = exc
         raise JudgeValidationError(str(last_error), {"attempts": attempts})
+
+    async def _deduction_reason_fallback(
+        self, result: JudgeResult, prompt: str, generated_image: str, missing_ids: list[str]
+    ) -> dict:
+        missing = [check.model_dump() for check in result.checks if check.id in missing_ids]
+        content = [
+            text_part(
+                json.dumps(
+                    {
+                        "original_prompt": prompt,
+                        "checks_to_explain": missing,
+                        "instruction": "只补写这些检查项的具体扣分理由，id必须逐项对应。",
+                    },
+                    ensure_ascii=False,
+                )
+            ),
+            image_part(generated_image, detail="high", max_side=1536),
+        ]
+        raw = await self.client.chat_json(
+            system=DEDUCTION_REASON_SYSTEM_PROMPT,
+            user_content=content,
+            schema=DEDUCTION_REASON_SCHEMA,
+            schema_name="deduction_reason_fallback",
+        )
+        reasons = {item["id"]: item["reason"].strip() for item in raw["reasons"]}
+        if set(reasons) != set(missing_ids):
+            raise ValueError(f"Deduction fallback mismatched ids: {sorted(reasons)}")
+        for check in result.checks:
+            if check.id in missing_ids:
+                if not reasons[check.id].startswith("扣分点："):
+                    raise ValueError(f"Deduction fallback invalid reason for {check.id}")
+                check.reason = reasons[check.id]
+        return raw
 
     async def _text_layout_fallback(
         self, route: RouteDecision, prompt: str, generated_image: str

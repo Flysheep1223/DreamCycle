@@ -185,6 +185,35 @@ EDIT_PQ_SCHEMA = {
     "additionalProperties": False,
 }
 
+DEDUCTION_REASON_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "reasons": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "minLength": 1},
+                    "reason": {"type": "string", "minLength": 1},
+                },
+                "required": ["id", "reason"],
+                "additionalProperties": False,
+            },
+        }
+    },
+    "required": ["reasons"],
+    "additionalProperties": False,
+}
+
+DEDUCTION_REASON_SYSTEM_PROMPT = """
+你只负责补写低分检查项的具体扣分理由，不重新评分，不改变任何检查项的分数。
+对给定检查项逐项返回 id 和 reason。reason 必须以“扣分点：”开头，具体说明未满足的条件、
+可见缺陷或证据不足，不得只写“基本符合”“略有问题”或复述分数。
+理由应依据图片和已有 evidence，最多60个汉字，不输出自我对话或推理过程。
+只返回符合 schema 的 JSON。
+""".strip()
+
 TEXT_LAYOUT_SCHEMA = {
     "type": "object",
     "properties": {
